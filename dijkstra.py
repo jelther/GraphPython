@@ -1,3 +1,5 @@
+import os
+
 # see documentation at : https://networkx.github.io/
 import networkx as nx
 
@@ -98,6 +100,9 @@ data = [
 	}
 ]
 
+pasta = "output/"
+if not os.path.exists(pasta):
+	os.makedirs(pasta)
 
 #main loop through data dictionary defined above
 for d in data:
@@ -111,7 +116,7 @@ for d in data:
 
 	for s in start_node:
 		for e in end_node:
-			f = file( d['algorithm'] + "_" + d['graph_name'] + "_" + str(s) + "_" + str(e) + ".txt", 'w' )
+			f = file( pasta + d['algorithm'] + "_" + d['graph_name'] + "_" + str(s) + "_" + str(e) + ".txt", 'w' )
 			sys.stdout = f
 
 			print "************************************"

@@ -1,3 +1,5 @@
+import os
+
 # see documentation at : https://networkx.github.io/
 import networkx as nx
 

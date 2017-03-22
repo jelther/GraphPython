@@ -1,0 +1,22 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+************************************
+Dijkstra\PYGZsq{}s Algorithm
+************************************
+Graph Name:  rede\PYGZus{}italiana
+Start Node:  1
+End Node:  7
+
+|Original Algorithm|
+Shortest Path from  1  to  7  is:  [1, 2, 7]
+Previous Node before  7  is :  2
+Shortest Path Length from  1  to  7  is:  230.0
+Time Elapsed (in seconds):  0.000132428318207
+Number of Iterations:  6
+Number of Relaxations:  23
+
+|Networkx Algorithm|
+Shortest Path from  1  to  7  is :  [1, 2, 7]
+Previous Node before  7  is :  2
+Shortest Path Length from  1  to  7  is :  230.0
+Time Elapsed (in seconds):  0.000179109300375
+\end{Verbatim}

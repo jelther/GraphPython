@@ -1,0 +1,21 @@
+************************************
+Dijkstra's Algorithm
+************************************
+Graph Name:  rede_usa
+Start Node:  1
+End Node:  10
+
+|Original Algorithm|
+Shortest Path from  1  to  10  is:  [1, 4, 10]
+Previous Node before  10  is :  4
+Shortest Path Length from  1  to  10  is:  486.0
+Time Elapsed (in seconds):  0.000142029371277
+Number of Iterations:  5
+Number of Relaxations:  21
+
+|Networkx Algorithm|
+Shortest Path from  1  to  10  is :  [1, 4, 10]
+Previous Node before  10  is :  4
+Shortest Path Length from  1  to  10  is :  486.0
+Time Elapsed (in seconds):  0.000724713971386
+

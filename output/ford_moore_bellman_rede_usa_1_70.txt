@@ -1,0 +1,21 @@
+************************************
+Ford-Moore-Bellman's Algorithm
+************************************
+Graph Name:  rede_usa
+Start Node:  1
+End Node:  70
+
+|Original Algorithm|
+Shortest Path from  1  to  70  is:  [1, 3, 23, 33, 47, 55, 57, 70]
+Previous Node before  70  is :  57
+Shortest Path Length from  1  to  70  is:   3429.0
+Time Elapsed (in seconds):  0.000376427494503
+Number of Iterations:  210
+Number of Relaxations:  210
+
+|Networkx Algorithm|
+Shortest Path from  1  to  70  is :  [1, 3, 23, 33, 47, 55, 57, 70]
+Previous Node before  70  is :  57
+Shortest Path Length from  1  to  70  is :  3429.0
+Time Elapsed (in seconds):  0.000421784193488
+

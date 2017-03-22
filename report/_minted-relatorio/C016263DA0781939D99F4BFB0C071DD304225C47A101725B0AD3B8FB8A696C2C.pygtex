@@ -1,0 +1,22 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+************************************
+Dijkstra\PYGZsq{}s Algorithm
+************************************
+Graph Name:  rede\PYGZus{}usa
+Start Node:  1
+End Node:  70
+
+|Original Algorithm|
+Shortest Path from  1  to  70  is:  [1, 3, 23, 33, 47, 55, 57, 70]
+Previous Node before  70  is :  57
+Shortest Path Length from  1  to  70  is:  3429.0
+Time Elapsed (in seconds):  0.00144876580118
+Number of Iterations:  65
+Number of Relaxations:  396
+
+|Networkx Algorithm|
+Shortest Path from  1  to  70  is :  [1, 3, 23, 33, 47, 55, 57, 70]
+Previous Node before  70  is :  57
+Shortest Path Length from  1  to  70  is :  3429.0
+Time Elapsed (in seconds):  0.00069491759979
+\end{Verbatim}

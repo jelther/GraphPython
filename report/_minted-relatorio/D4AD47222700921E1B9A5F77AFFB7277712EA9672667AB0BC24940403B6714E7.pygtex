@@ -1,0 +1,22 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+************************************
+Ford\PYGZhy{}Moore\PYGZhy{}Bellman\PYGZsq{}s Algorithm
+************************************
+Graph Name:  rede\PYGZus{}usa
+Start Node:  1
+End Node:  20
+
+|Original Algorithm|
+Shortest Path from  1  to  20  is:  [1, 4, 10, 20]
+Previous Node before  20  is :  10
+Shortest Path Length from  1  to  20  is:   1086.0
+Time Elapsed (in seconds):  0.000314848326536
+Number of Iterations:  210
+Number of Relaxations:  210
+
+|Networkx Algorithm|
+Shortest Path from  1  to  20  is :  [1, 4, 10, 20]
+Previous Node before  20  is :  10
+Shortest Path Length from  1  to  20  is :  1086.0
+Time Elapsed (in seconds):  0.000536665759533
+\end{Verbatim}

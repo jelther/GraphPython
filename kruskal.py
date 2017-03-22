@@ -1,3 +1,5 @@
+import os
+
 # see documentation at : https://networkx.github.io/
 import networkx as nx
 
@@ -96,12 +98,17 @@ data = [
     }
 ]
 
+
+pasta = "output/"
+if not os.path.exists(pasta):
+    os.makedirs(pasta)
+
 #main loop through data dictionary defined above
 for d in data:   
 
     G = nx.read_weighted_edgelist(d['file'],nodetype=int)
 
-    f = file( d['algorithm'] + "_" + d['graph_name'] + '.txt', 'w')
+    f = file( pasta + d['algorithm'] + "_" + d['graph_name'] + '.txt', 'w')
     sys.stdout = f
 
     for s in d['start_node']:

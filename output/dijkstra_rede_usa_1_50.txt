@@ -1,0 +1,21 @@
+************************************
+Dijkstra's Algorithm
+************************************
+Graph Name:  rede_usa
+Start Node:  1
+End Node:  50
+
+|Original Algorithm|
+Shortest Path from  1  to  50  is:  [1, 2, 9, 13, 40, 44, 50]
+Previous Node before  50  is :  44
+Shortest Path Length from  1  to  50  is:  1973.0
+Time Elapsed (in seconds):  0.0010630683244
+Number of Iterations:  47
+Number of Relaxations:  295
+
+|Networkx Algorithm|
+Shortest Path from  1  to  50  is :  [1, 2, 9, 13, 40, 44, 50]
+Previous Node before  50  is :  44
+Shortest Path Length from  1  to  50  is :  1973.0
+Time Elapsed (in seconds):  0.000675053352059
+

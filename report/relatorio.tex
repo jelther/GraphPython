@@ -1,0 +1,226 @@
+\documentclass[10pt,a4paper]{report}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{chngcntr}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage[]{tocbibind}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{lmodern}
+
+\usepackage[toc]{appendix}
+
+% hyperref nao esta funcionando com o appendix
+% \usepackage[]{hyperref}
+\usepackage[]{url}
+
+\usepackage{titlesec}
+
+\usepackage{pgffor}
+
+% quebra de pagina a cada secao
+%\newcommand{\sectionbreak}{\clearpage}
+%\newcommand{\subsectionbreak}{\clearpage}
+
+
+%========================================
+%Refaz o estilo dos cabecalhos e rodape
+%========================================
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[LE,RO]{ \footnotesize \today}
+	\fancyhead[RE,LO]{ \footnotesize Algoritmos de Prim, Kruskal, Dijkstra e Ford-Moore-Bellman}
+	\fancyfoot[CE,CO]{\leftmark}
+	\fancyfoot[LE,RO]{\thepage}
+}
+
+\pagestyle{plain}
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+%========================================
+
+
+%========================================
+% Traduz a forca o nome dos apendices
+%========================================
+\renewcommand{\appendixtocname}{Apêndices}
+%========================================
+
+\begin{document}
+
+
+%========================================
+%Capa do trabalho esta em outro arquivo
+%========================================
+\input{capa.tex}
+%========================================
+
+
+
+\abstract{
+
+Neste presente trabalho foram aplicados os algoritmos de Prim,Kruskal,Dijkstra e Ford-Moore-Bellman em 2 grafos : Rede Óptica Italiana e Rede Rodoviária dos EUA.
+
+A linguagem de programação utilizada foi o \textit{Python 2.7} juntamente com o pacote \textit{Networkx} como estrutura para os grafos e para efeito de comparação com os algoritmos já existentes neste pacote.
+
+Para os algoritmos de Prim e Kruskal, foram gerados arquivos texto com os dados da árvore geradora mínima (suas arestas e nós) assim como o número de iterações, custo da árvore e o tempo computacional gasto.
+
+Já para os algoritmos de Dijkstra e Ford-Moore-Bellman, foram apresentados os caminhos mínimos gerados para cada nó-fim solicitado, bem como o tamanho do caminho mínimo, número de iterações e relaxações aplicadas e o nó-anterior ao nó-fim.
+
+}
+
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\chapter{A linguagem Python}
+A linguagem Python, conforme visto em \cite{python} e \cite{pythonwikipedia} é uma linguagem de alto nivel, interpretada, de script, multiplataforma, orientada a objetos, funcional,de tipagem dinâmica e forte. Foi criada em 1991 e é amplamente utilizada mundialmente.
+
+Apesar de facilitar o desenvolvimento, em relação as linguagens compiladas existe uma penalidade na performance dos scripts criados \cite{pythonperformance}. Entretanto, utilizando de pacotes já desenvolvidos sobre rotinas compiladas,a perda de performance é menor.
+
+
+\chapter{O pacote Networkx}
+O pacote Networkx \cite{networkx} é utilizado para criação,manipulação e estudo de grafos e redes.
+
+O pacote já possui vários métodos implementados \cite{networkxdocumentation} mas neste trabalho nos limitamos a utilizar somente a estrutura dos grafos e seus métodos para acessar os nós e arestas.
+
+
+
+\chapter{Set-up do computador utilizado}
+O computador em que estes algoritmos foram rodados possui a seguinte configuração:
+
+\begin{itemize}  
+\item Processador AMD FX-4300, Black Edition, Cache 8Mb, 3.8GHz, AM3+ FD4300WMHKBOX
+\item 8 GB RAM Kingston 1333Mhz DDR3 CL9 - KVR13N9S8/4
+\item Sistema Operacional Microsoft Windows 10 (build 14393), 64-bit
+\end{itemize}
+
+
+\chapter{Algoritmo de Prim}
+\section{Resumo}
+Nesta implementação o conjunto franja é construído a cada iteração. Saliento que este não é o melhor caminho em termos de performance, como pode ser visto com a comparação do tempo de execução com o algoritmo do pacote Networkx.
+
+\section{Rede Italiana}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/prim_rede_italiana.txt}
+
+
+\section{Rede USA}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/prim_rede_usa.txt}
+
+
+\chapter{Algoritmo de Kruskal}
+\section{Resumo}
+Nesta implementação o a busca pelo ciclo no algoritmo é feita utilizando o DFS (Depth-first search) \cite{dfsalgorithm}. Em termos de performance, utilizar o Disjoint-Set Data Structure \cite{disjointsetalgorithm} tem uma performance melhor mas devido a problemas na implementação ele não foi utilizado.
+
+\section{Rede Italiana}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/kruskal_rede_italiana.txt}
+
+\section{Rede USA}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/kruskal_rede_usa.txt}
+
+
+\chapter{Algoritmo de Dijkstra}
+\section{Resumo}
+A lógica de implentação foi igual ao que foi apresentado em \cite{slidesaula}.
+
+\section{Rede Italiana}
+\foreach \x in {7,14,21}{
+\subsection{De 1 a \x}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/dijkstra_rede_italiana_1_\x.txt}
+}
+
+\section{Rede USA}
+\foreach \x in {10,20,30,40,50,60,70}{
+\subsection{De 1 a \x}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/dijkstra_rede_usa_1_\x.txt}
+}
+
+
+\chapter{Algoritmo de Ford-Moore-Bellman}
+\section{Resumo}
+A lógica de implentação foi igual ao que foi apresentado em \cite{slidesaula}.
+
+\section{Rede Italiana}
+\foreach \x in {7,14,21}{
+\subsection{De 1 a \x}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/ford_moore_bellman_rede_italiana_1_\x.txt}
+}
+
+\section{Rede USA}
+\foreach \x in {10,20,30,40,50,60,70}{
+\subsection{De 1 a \x}
+\inputminted[fontsize=\small,linenos,tabsize=2,breaklines]{text}{../output/ford_moore_bellman_rede_usa_1_\x.txt}
+}
+
+
+\begin{thebibliography}{9}
+
+\bibitem{python}
+  Python Project,
+  https://www.python.org/,
+  Visitado em : \today
+  
+\bibitem{pythonwikipedia}
+	Python - Wikipedia Article,
+	https://pt.wikipedia.org/wiki/Python,
+	Visitado em : \today
+	
+\bibitem{pythonperformance}
+	Why is Python used for high-performance/scientific computing?,
+	https://goo.gl/8aRXjN,
+	Visitado em : \today
+
+\bibitem{networkx}
+  Networkx,
+  https://networkx.github.io/,
+  Visitado em : \today
+
+\bibitem{networkxdocumentation}
+  Networkx Lastest Documentation,
+  https://networkx.readthedocs.io/en/stable/,
+  Visitado em : \today
+  
+\bibitem{dfsalgorithm}
+  Depth-first Algorithm,
+  https://en.wikipedia.org/wiki/Depth-first\_search,
+  Visitado em : \today
+
+\bibitem{disjointsetalgorithm}
+  Disjoint-set data structure,
+  https://en.wikipedia.org/wiki/Disjoint-set\_data\_structure,
+  Visitado em : \today  
+
+\bibitem{slidesaula}
+  Notas de Aula IA 881 - $2^{o}$ semestre de 2016,
+  http://www.dt.fee.unicamp.br/~ricfow/IA881/ia881.htm,
+  Visitado em : \today 
+    
+\end{thebibliography}
+
+
+\begin{appendices}
+\chapter{Prim}
+\inputminted[fontsize=\footnotesize,linenos,breaklines]{python}{../prim.py}
+\chapter{Kruskal}
+\inputminted[fontsize=\footnotesize,linenos,breaklines]{python}{../kruskal.py}
+\chapter{Dijkstra}
+\inputminted[fontsize=\footnotesize,linenos,breaklines]{python}{../dijkstra.py}
+\chapter{Ford-Moore-Bellman}
+\inputminted[fontsize=\footnotesize,linenos,breaklines]{python}{../ford_moore_bellman.py}
+\end{appendices}
+
+
+\end{document}

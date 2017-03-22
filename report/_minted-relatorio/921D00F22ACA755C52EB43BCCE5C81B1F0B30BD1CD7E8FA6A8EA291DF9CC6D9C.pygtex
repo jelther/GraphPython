@@ -1,0 +1,169 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{os}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at : https://networkx.github.io/}
+\PYG{k+kn}{import} \PYG{n+nn}{networkx} \PYG{k+kn}{as} \PYG{n+nn}{nx}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/timeit.html}
+\PYG{k+kn}{import} \PYG{n+nn}{timeit}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/sys.html}
+\PYG{k+kn}{import} \PYG{n+nn}{sys}
+
+\PYG{k}{def} \PYG{n+nf}{isCyclicUtil}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,} \PYG{n}{v}\PYG{p}{,} \PYG{n}{visited}\PYG{p}{,} \PYG{n}{parent}\PYG{p}{):}
+
+    \PYG{c+c1}{\PYGZsh{} Mark the current node as visited}
+    \PYG{n}{visited}\PYG{p}{[}\PYG{n}{v}\PYG{p}{]} \PYG{o}{=} \PYG{n+nb+bp}{True}
+
+    \PYG{c+c1}{\PYGZsh{} Search for all the vertices adjacent to this vertex    }
+    \PYG{k}{for} \PYG{n}{edge} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{v}\PYG{p}{):}
+        \PYG{n}{i} \PYG{o}{=} \PYG{n}{edge}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+
+        \PYG{c+c1}{\PYGZsh{} If the node is not visited then recurse on it}
+        \PYG{k}{if} \PYG{n}{visited}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{==} \PYG{n+nb+bp}{False}\PYG{p}{:}
+            \PYG{k}{if} \PYG{p}{(}\PYG{n}{isCyclicUtil}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{visited}\PYG{p}{,} \PYG{n}{v}\PYG{p}{)):}
+                \PYG{k}{return} \PYG{n+nb+bp}{True}
+        \PYG{c+c1}{\PYGZsh{} If an adjacent vertex is visited and not parent of current vertex, is a cycle!}
+        \PYG{k}{elif} \PYG{n}{parent} \PYG{o}{!=} \PYG{n}{i}\PYG{p}{:}
+            \PYG{k}{return} \PYG{n+nb+bp}{True}
+
+    \PYG{k}{return} \PYG{n+nb+bp}{False}
+
+
+\PYG{k}{def} \PYG{n+nf}{isCyclic}\PYG{p}{(}\PYG{n}{G}\PYG{p}{):}
+
+    \PYG{c+c1}{\PYGZsh{} Mark all the vertices as not visited}
+    \PYG{n}{visited} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{():}
+        \PYG{n}{visited}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n+nb+bp}{False}
+
+    \PYG{c+c1}{\PYGZsh{} Call the recursive helper function to detect cycle in different DFS trees    }
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{():}
+        \PYG{k}{if} \PYG{n}{visited}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{==} \PYG{n+nb+bp}{False}\PYG{p}{:}  \PYG{c+c1}{\PYGZsh{} Don\PYGZsq{}t recur for u if it is already visited}
+            \PYG{k}{if} \PYG{p}{(}\PYG{n}{isCyclicUtil}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,} \PYG{n}{i}\PYG{p}{,} \PYG{n}{visited}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{))} \PYG{o}{==} \PYG{n+nb+bp}{True}\PYG{p}{:}
+                \PYG{k}{return} \PYG{n+nb+bp}{True}
+
+    \PYG{k}{return} \PYG{n+nb+bp}{False}
+
+
+\PYG{k}{def} \PYG{n+nf}{build\PYGZus{}ordered\PYGZus{}edges}\PYG{p}{(}\PYG{n}{g}\PYG{p}{):}
+    \PYG{k}{return} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{G}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{),} \PYG{n}{key}\PYG{o}{=}\PYG{k}{lambda} \PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{,} \PYG{n}{data}\PYG{p}{):} \PYG{n}{data}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{])}
+
+\PYG{k}{def} \PYG{n+nf}{kruskal}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{s}\PYG{p}{):}
+
+    \PYG{k}{global} \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+
+    \PYG{n}{mst} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{Graph}\PYG{p}{()}
+
+    \PYG{n}{ordered\PYGZus{}edges} \PYG{o}{=} \PYG{n}{build\PYGZus{}ordered\PYGZus{}edges}\PYG{p}{(}\PYG{n}{G}\PYG{p}{)}
+
+    \PYG{n}{total\PYGZus{}cost} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+    \PYG{k}{for} \PYG{n}{candidate} \PYG{o+ow}{in} \PYG{n}{ordered\PYGZus{}edges}\PYG{p}{:}
+
+        \PYG{n}{u} \PYG{o}{=} \PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+        \PYG{n}{v} \PYG{o}{=} \PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+        \PYG{n}{weight} \PYG{o}{=} \PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{][}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{]}
+
+        \PYG{n}{mst}\PYG{o}{.}\PYG{n}{add\PYGZus{}edge}\PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{,} \PYG{n}{weight}\PYG{o}{=}\PYG{n}{weight}\PYG{p}{)}      
+
+        \PYG{k}{if} \PYG{p}{(}\PYG{n}{isCyclic}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{)):}
+            \PYG{n}{mst}\PYG{o}{.}\PYG{n}{remove\PYGZus{}edge}\PYG{p}{(}\PYG{n}{u}\PYG{p}{,}\PYG{n}{v}\PYG{p}{)}
+            \PYG{n}{total\PYGZus{}cost} \PYG{o}{\PYGZhy{}=} \PYG{n}{weight}
+        
+        \PYG{n}{total\PYGZus{}cost} \PYG{o}{+=} \PYG{n}{weight}
+
+        \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{+=} \PYG{l+m+mi}{1}
+            
+
+    \PYG{k}{return} \PYG{n}{total\PYGZus{}cost}\PYG{p}{,}\PYG{n}{mst}
+
+\PYG{k}{def} \PYG{n+nf}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{G}\PYG{p}{):}    
+    \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{):}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}(From,To,Weight) = \PYGZdq{}}\PYG{p}{,}\PYG{n}{i}
+
+\PYG{c+c1}{\PYGZsh{} dictionary containing the necessary information}
+\PYG{n}{data} \PYG{o}{=} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}kruskal\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}italiana\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeitaliana.ncol\PYGZsq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}kruskal\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}usa\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeusa.ncol\PYGZsq{}}\PYG{p}{,}
+        \PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{p}{\PYGZcb{}}
+\PYG{p}{]}
+
+
+\PYG{n}{pasta} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}output/\PYGZdq{}}
+\PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{):}
+    \PYG{n}{os}\PYG{o}{.}\PYG{n}{makedirs}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}main loop through data dictionary defined above}
+\PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{data}\PYG{p}{:}   
+
+    \PYG{n}{G} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{read\PYGZus{}weighted\PYGZus{}edgelist}\PYG{p}{(}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}}\PYG{p}{],}\PYG{n}{nodetype}\PYG{o}{=}\PYG{n+nb}{int}\PYG{p}{)}
+
+    \PYG{n}{f} \PYG{o}{=} \PYG{n+nb}{file}\PYG{p}{(} \PYG{n}{pasta} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZdq{}} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s1}{\PYGZsq{}.txt\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}w\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{sys}\PYG{o}{.}\PYG{n}{stdout} \PYG{o}{=} \PYG{n}{f}
+
+    \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}}\PYG{p}{]:}
+
+        \PYG{c+c1}{\PYGZsh{}global variables}
+        \PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Kruskal\PYGZsq{}s Algorithm\PYGZdq{}}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Graph Name: \PYGZdq{}}\PYG{p}{,}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Start Node: \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}        
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+        \PYG{c+c1}{\PYGZsh{}run the algorithm}
+        \PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+        \PYG{n}{total\PYGZus{}cost}\PYG{p}{,}\PYG{n}{mst} \PYG{o}{=} \PYG{n}{kruskal}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{s}\PYG{p}{)}
+        \PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}
+
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Original Algorithm|\PYGZdq{}}
+        
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Nodes of MST is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{mst}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{()}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Edges of MST is: \PYGZdq{}}
+        \PYG{n}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{)}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Total Cost is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{total\PYGZus{}cost}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Number of Iterations: \PYGZdq{}}\PYG{p}{,}\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+
+        \PYG{c+c1}{\PYGZsh{}run the networkx algorithm}
+        \PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+        \PYG{c+c1}{\PYGZsh{}it\PYGZsq{}s kruskal algorithm}
+        \PYG{n}{T} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{minimum\PYGZus{}spanning\PYGZus{}tree}\PYG{p}{(}\PYG{n}{G}\PYG{p}{)}
+        \PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}        
+        
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Networkx Algorithm|\PYGZdq{}}
+
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Nodes of MST is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{T}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{()}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Edges of MST is: \PYGZdq{}}
+        \PYG{n}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{T}\PYG{p}{)}
+
+        \PYG{n}{total\PYGZus{}cost} \PYG{o}{=} \PYG{l+m+mi}{0}
+        \PYG{k}{for} \PYG{n}{edge} \PYG{o+ow}{in} \PYG{n}{T}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{):}
+            \PYG{n}{total\PYGZus{}cost} \PYG{o}{+=} \PYG{n}{edge}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}
+        
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Total Cost is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{total\PYGZus{}cost}
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}        
+        \PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}} 
+
+    \PYG{n}{f}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()}
+\end{Verbatim}

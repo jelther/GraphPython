@@ -1,0 +1,149 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{os}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at : https://networkx.github.io/}
+\PYG{k+kn}{import} \PYG{n+nn}{networkx} \PYG{k+kn}{as} \PYG{n+nn}{nx}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/timeit.html}
+\PYG{k+kn}{import} \PYG{n+nn}{timeit}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/itertools.html}
+\PYG{k+kn}{import} \PYG{n+nn}{itertools}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/sys.html}
+\PYG{k+kn}{import} \PYG{n+nn}{sys}
+
+\PYG{k}{def} \PYG{n+nf}{getWeight}\PYG{p}{(}\PYG{n}{k}\PYG{p}{):}
+	\PYG{k}{return} \PYG{n}{k}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}
+
+\PYG{k}{def} \PYG{n+nf}{return\PYGZus{}minimum\PYGZus{}edge\PYGZus{}fringe}\PYG{p}{(}\PYG{n}{fringe}\PYG{p}{):}
+	\PYG{n}{ordered\PYGZus{}edges\PYGZus{}by\PYGZus{}weight} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{fringe}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{),}\PYG{n}{key}\PYG{o}{=}\PYG{n}{getWeight}\PYG{p}{)}
+	\PYG{k}{return} \PYG{n}{ordered\PYGZus{}edges\PYGZus{}by\PYGZus{}weight}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+
+\PYG{k}{def} \PYG{n+nf}{build\PYGZus{}fringe}\PYG{p}{(}\PYG{n}{g}\PYG{p}{,}\PYG{n}{mst}\PYG{p}{):}
+
+	\PYG{n}{fringe} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{Graph}\PYG{p}{()}
+
+	\PYG{n}{fringe\PYGZus{}nodes} \PYG{o}{=} \PYG{n+nb}{set}\PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{g}\PYG{p}{))}\PYG{o}{.}\PYG{n}{difference}\PYG{p}{(}\PYG{n+nb}{set}\PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{)))}
+
+	\PYG{n}{fringe}\PYG{o}{.}\PYG{n}{add\PYGZus{}nodes\PYGZus{}from}\PYG{p}{(}\PYG{n+nb}{set}\PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{g}\PYG{p}{))}\PYG{o}{.}\PYG{n}{difference}\PYG{p}{(}\PYG{n+nb}{set}\PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{))))}
+	
+	\PYG{k}{for} \PYG{n}{node} \PYG{o+ow}{in} \PYG{n}{itertools}\PYG{o}{.}\PYG{n}{product}\PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{),}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{fringe}\PYG{p}{)):}        
+		\PYG{k}{if} \PYG{n}{g}\PYG{o}{.}\PYG{n}{has\PYGZus{}edge}\PYG{p}{(}\PYG{o}{*}\PYG{n}{node}\PYG{p}{)} \PYG{o+ow}{or} \PYG{n}{g}\PYG{o}{.}\PYG{n}{has\PYGZus{}edge}\PYG{p}{(}\PYG{o}{*}\PYG{n+nb}{tuple}\PYG{p}{(}\PYG{n+nb}{reversed}\PYG{p}{(}\PYG{n}{node}\PYG{p}{))):}
+			\PYG{n}{fringe}\PYG{o}{.}\PYG{n}{add\PYGZus{}edge}\PYG{p}{(}\PYG{o}{*}\PYG{n}{node}\PYG{p}{,}\PYG{n}{weight}\PYG{o}{=}\PYG{n}{g}\PYG{o}{.}\PYG{n}{get\PYGZus{}edge\PYGZus{}data}\PYG{p}{(}\PYG{o}{*}\PYG{n}{node}\PYG{p}{)[}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{])}            
+
+	\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{(}\PYG{n}{fringe}\PYG{p}{):}
+		\PYG{k}{if} \PYG{n}{fringe}\PYG{o}{.}\PYG{n}{degree}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+			\PYG{n}{fringe}\PYG{o}{.}\PYG{n}{remove\PYGZus{}node}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)}
+		  
+	\PYG{k}{return} \PYG{n}{fringe}
+
+
+\PYG{k}{def} \PYG{n+nf}{prim}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{start\PYGZus{}node}\PYG{p}{):}
+
+	\PYG{k}{global} \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+
+	\PYG{n}{total\PYGZus{}cost} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+	\PYG{n}{mst} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{Graph}\PYG{p}{()}
+	\PYG{n}{mst}\PYG{o}{.}\PYG{n}{add\PYGZus{}node}\PYG{p}{(}\PYG{n}{start\PYGZus{}node}\PYG{p}{)}
+
+	\PYG{k}{while} \PYG{p}{(}\PYG{n}{nx}\PYG{o}{.}\PYG{n}{number\PYGZus{}of\PYGZus{}nodes}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{)} \PYG{o}{\PYGZlt{}} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{number\PYGZus{}of\PYGZus{}nodes}\PYG{p}{(}\PYG{n}{G}\PYG{p}{)):}
+
+		\PYG{n}{fringe} \PYG{o}{=} \PYG{n}{build\PYGZus{}fringe}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{mst}\PYG{p}{)}
+		\PYG{n}{min\PYGZus{}edge} \PYG{o}{=} \PYG{n}{return\PYGZus{}minimum\PYGZus{}edge\PYGZus{}fringe}\PYG{p}{(}\PYG{n}{fringe}\PYG{p}{)}
+
+		\PYG{n}{mst}\PYG{o}{.}\PYG{n}{add\PYGZus{}edge}\PYG{p}{(}\PYG{n}{min\PYGZus{}edge}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],}\PYG{n}{min\PYGZus{}edge}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],}\PYG{n}{weight}\PYG{o}{=}\PYG{n}{getWeight}\PYG{p}{(}\PYG{n}{min\PYGZus{}edge}\PYG{p}{))}
+
+		\PYG{n}{total\PYGZus{}cost} \PYG{o}{+=} \PYG{n}{getWeight}\PYG{p}{(}\PYG{n}{min\PYGZus{}edge}\PYG{p}{)}
+		\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{+=} \PYG{l+m+mi}{1}
+
+	\PYG{k}{return} \PYG{n}{total\PYGZus{}cost}\PYG{p}{,}\PYG{n}{mst}
+
+\PYG{k}{def} \PYG{n+nf}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{G}\PYG{p}{):}    
+	\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+	\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{):}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}(From,To,Weight) = \PYGZdq{}}\PYG{p}{,}\PYG{n}{i}
+
+\PYG{c+c1}{\PYGZsh{} dictionary containing the necessary information}
+\PYG{n}{data} \PYG{o}{=} \PYG{p}{[}
+	\PYG{p}{\PYGZob{}}
+		\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}prim\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}italiana\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeitaliana.ncol\PYGZsq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+	\PYG{p}{\PYGZcb{},}
+	\PYG{p}{\PYGZob{}}
+		\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}prim\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}usa\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeusa.ncol\PYGZsq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{n}{pasta} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}output/\PYGZdq{}}
+\PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{):}
+	\PYG{n}{os}\PYG{o}{.}\PYG{n}{makedirs}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}main loop through data dictionary defined above}
+\PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{data}\PYG{p}{:}   
+
+	\PYG{n}{G} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{read\PYGZus{}weighted\PYGZus{}edgelist}\PYG{p}{(}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}}\PYG{p}{],}\PYG{n}{nodetype}\PYG{o}{=}\PYG{n+nb}{int}\PYG{p}{)}
+
+	\PYG{n}{f} \PYG{o}{=} \PYG{n+nb}{file}\PYG{p}{(} \PYG{n}{pasta} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZdq{}} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s1}{\PYGZsq{}.txt\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}w\PYGZsq{}}\PYG{p}{)}
+	\PYG{n}{sys}\PYG{o}{.}\PYG{n}{stdout} \PYG{o}{=} \PYG{n}{f}
+
+	\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}}\PYG{p}{]:}
+
+		\PYG{c+c1}{\PYGZsh{}global variables        }
+		\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{=} \PYG{l+m+mi}{0}
+		
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Prim\PYGZsq{}s Algorithm\PYGZdq{}}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Graph Name: \PYGZdq{}}\PYG{p}{,}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Start Node: \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}        
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+		\PYG{c+c1}{\PYGZsh{}run the algorithm}
+		\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+		\PYG{n}{total\PYGZus{}cost}\PYG{p}{,}\PYG{n}{mst} \PYG{o}{=} \PYG{n}{prim}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{s}\PYG{p}{)}
+		\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}
+
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Original Algorithm|\PYGZdq{}}
+		
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Nodes of MST is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{mst}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{()}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Edges of MST is: \PYGZdq{}}\PYG{p}{,}
+		\PYG{n}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{mst}\PYG{p}{)}
+
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Total Cost is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{total\PYGZus{}cost}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Number of Iterations: \PYGZdq{}}\PYG{p}{,}\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+		\PYG{c+c1}{\PYGZsh{}run the networkx algorithm}
+		\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+		\PYG{n}{T} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{prim\PYGZus{}mst}\PYG{p}{(}\PYG{n}{G}\PYG{p}{)}        
+		\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}        
+		
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Networkx Algorithm|\PYGZdq{}}
+
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Nodes of MST is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{T}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{()}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Edges of MST is: \PYGZdq{}}
+		\PYG{n}{print\PYGZus{}edges}\PYG{p}{(}\PYG{n}{T}\PYG{p}{)}
+
+		\PYG{n}{total\PYGZus{}cost} \PYG{o}{=} \PYG{l+m+mi}{0}
+		\PYG{k}{for} \PYG{n}{edge} \PYG{o+ow}{in} \PYG{n}{T}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{):}
+			\PYG{n}{total\PYGZus{}cost} \PYG{o}{+=} \PYG{n}{getWeight}\PYG{p}{(}\PYG{n}{edge}\PYG{p}{)}
+
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Total Cost is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{total\PYGZus{}cost}
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}        
+		\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+	\PYG{n}{f}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()}
+\end{Verbatim}

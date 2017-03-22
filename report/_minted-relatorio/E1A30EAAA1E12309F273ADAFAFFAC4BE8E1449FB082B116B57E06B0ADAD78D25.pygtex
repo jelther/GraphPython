@@ -1,0 +1,182 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{os}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at : https://networkx.github.io/}
+\PYG{k+kn}{import} \PYG{n+nn}{networkx} \PYG{k+kn}{as} \PYG{n+nn}{nx}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/timeit.html}
+\PYG{k+kn}{import} \PYG{n+nn}{timeit}
+
+\PYG{c+c1}{\PYGZsh{} see documentation at: https://docs.python.org/2/library/sys.html}
+\PYG{k+kn}{import} \PYG{n+nn}{sys}
+
+\PYG{c+c1}{\PYGZsh{}gets the minimum node based on the visited nodes}
+\PYG{k}{def} \PYG{n+nf}{select\PYGZus{}minimum\PYGZus{}node}\PYG{p}{(}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{):}
+	\PYG{n}{minimum\PYGZus{}value} \PYG{o}{=} \PYG{n+nb}{float}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}inf\PYGZdq{}}\PYG{p}{)}
+
+	\PYG{n}{minimum\PYGZus{}node} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+	\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{visited\PYGZus{}nodes}\PYG{p}{:}
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{):}
+			\PYG{k}{if} \PYG{p}{(}\PYG{n}{dist}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{minimum\PYGZus{}value}\PYG{p}{):}
+				\PYG{n}{minimum\PYGZus{}node} \PYG{o}{=} \PYG{n}{i}
+				\PYG{n}{minimum\PYGZus{}value} \PYG{o}{=} \PYG{n}{dist}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}
+
+	\PYG{k}{return} \PYG{n}{minimum\PYGZus{}node}
+
+\PYG{c+c1}{\PYGZsh{}relax the edge}
+\PYG{k}{def} \PYG{n+nf}{relax\PYGZus{}edge}\PYG{p}{(}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{edge}\PYG{p}{):}
+
+	\PYG{k}{global} \PYG{n}{qty\PYGZus{}of\PYGZus{}relaxations}
+
+	\PYG{n}{u} \PYG{o}{=} \PYG{n}{edge}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+	\PYG{n}{v} \PYG{o}{=} \PYG{n}{edge}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+	\PYG{n}{weight} \PYG{o}{=} \PYG{n}{edge}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}
+
+	\PYG{k}{if} \PYG{p}{(}\PYG{n}{dist}\PYG{p}{[}\PYG{n}{v}\PYG{p}{]} \PYG{o}{\PYGZgt{}} \PYG{n}{dist}\PYG{p}{[}\PYG{n}{u}\PYG{p}{]} \PYG{o}{+} \PYG{n}{weight}\PYG{p}{):}
+		\PYG{n}{dist}\PYG{p}{[}\PYG{n}{v}\PYG{p}{]} \PYG{o}{=} \PYG{n}{dist}\PYG{p}{[}\PYG{n}{u}\PYG{p}{]} \PYG{o}{+} \PYG{n}{weight}
+		\PYG{n}{prev}\PYG{p}{[}\PYG{n}{v}\PYG{p}{]} \PYG{o}{=} \PYG{n}{u}
+
+	\PYG{n}{qty\PYGZus{}of\PYGZus{}relaxations} \PYG{o}{=} \PYG{n}{qty\PYGZus{}of\PYGZus{}relaxations} \PYG{o}{+} \PYG{l+m+mi}{1}
+
+
+\PYG{c+c1}{\PYGZsh{}check if unvisited nodes still exist}
+\PYG{k}{def} \PYG{n+nf}{unvisited\PYGZus{}nodes\PYGZus{}exist}\PYG{p}{(}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{):}
+	\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{visited\PYGZus{}nodes}\PYG{p}{:}
+		\PYG{k}{if} \PYG{p}{(}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{):}
+			\PYG{k}{return} \PYG{n+nb+bp}{True}
+	\PYG{k}{return} \PYG{n+nb+bp}{False}
+
+\PYG{c+c1}{\PYGZsh{}build list to show the path to reach the end node}
+\PYG{k}{def} \PYG{n+nf}{get\PYGZus{}minimum\PYGZus{}path}\PYG{p}{(}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{end\PYGZus{}node}\PYG{p}{):}
+	\PYG{n}{min\PYGZus{}path} \PYG{o}{=} \PYG{p}{[]}
+
+	\PYG{n}{u} \PYG{o}{=} \PYG{n}{end\PYGZus{}node}
+	\PYG{k}{while} \PYG{n}{prev}\PYG{p}{[}\PYG{n}{u}\PYG{p}{]} \PYG{o+ow}{is} \PYG{o+ow}{not} \PYG{n+nb+bp}{None}\PYG{p}{:}
+		\PYG{n}{min\PYGZus{}path} \PYG{o}{=} \PYG{p}{[}\PYG{n}{u}\PYG{p}{]} \PYG{o}{+} \PYG{n}{min\PYGZus{}path}
+		\PYG{n}{u} \PYG{o}{=} \PYG{n}{prev}\PYG{p}{[}\PYG{n}{u}\PYG{p}{]}
+
+	\PYG{n}{min\PYGZus{}path} \PYG{o}{=} \PYG{p}{[}\PYG{n}{u}\PYG{p}{]} \PYG{o}{+} \PYG{n}{min\PYGZus{}path}
+	\PYG{k}{return} \PYG{n}{min\PYGZus{}path}
+
+\PYG{c+c1}{\PYGZsh{} dijkstra algorithm}
+\PYG{k}{def} \PYG{n+nf}{dijkstra}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{,}\PYG{n}{start\PYGZus{}node}\PYG{p}{,}\PYG{n}{end\PYGZus{}node}\PYG{p}{):}
+
+	\PYG{k}{global} \PYG{n}{time\PYGZus{}consumed}
+	\PYG{k}{global} \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+
+	\PYG{c+c1}{\PYGZsh{}the minimum node is the start node}
+	\PYG{n}{minimum\PYGZus{}node} \PYG{o}{=} \PYG{n}{start\PYGZus{}node}
+
+	\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+
+	\PYG{k}{while} \PYG{p}{(}\PYG{n}{unvisited\PYGZus{}nodes\PYGZus{}exist}\PYG{p}{(}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{)):}
+		\PYG{n}{minimum\PYGZus{}node} \PYG{o}{=} \PYG{n}{select\PYGZus{}minimum\PYGZus{}node}\PYG{p}{(}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{)}
+
+		\PYG{k}{if} \PYG{n}{minimum\PYGZus{}node} \PYG{o}{==} \PYG{n}{end\PYGZus{}node}\PYG{p}{:}
+			\PYG{k}{break}
+
+		\PYG{k}{for} \PYG{n}{edge} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{edges}\PYG{p}{(}\PYG{n}{minimum\PYGZus{}node}\PYG{p}{,}\PYG{n}{data}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}weight\PYGZsq{}}\PYG{p}{):}
+			\PYG{n}{relax\PYGZus{}edge}\PYG{p}{(}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{edge}\PYG{p}{)}
+
+		\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{[}\PYG{n}{minimum\PYGZus{}node}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{1}
+		\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{=} \PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{+} \PYG{l+m+mi}{1}
+	\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}
+
+\PYG{c+c1}{\PYGZsh{} dictionary containing the necessary information}
+\PYG{n}{data} \PYG{o}{=} \PYG{p}{[}
+	\PYG{p}{\PYGZob{}}
+		\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}dijkstra\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}italiana\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeitaliana.ncol\PYGZsq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],}
+		\PYG{l+s+s1}{\PYGZsq{}end\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{7}\PYG{p}{,}\PYG{l+m+mi}{14}\PYG{p}{,}\PYG{l+m+mi}{21}\PYG{p}{]}
+	\PYG{p}{\PYGZcb{},}
+	\PYG{p}{\PYGZob{}}
+		\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}dijkstra\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rede\PYGZus{}usa\PYGZdq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}} \PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}redeusa.ncol\PYGZsq{}}\PYG{p}{,}
+		\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],}
+		\PYG{l+s+s1}{\PYGZsq{}end\PYGZus{}node\PYGZsq{}} \PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{10}\PYG{p}{,}\PYG{l+m+mi}{20}\PYG{p}{,}\PYG{l+m+mi}{30}\PYG{p}{,}\PYG{l+m+mi}{40}\PYG{p}{,}\PYG{l+m+mi}{50}\PYG{p}{,}\PYG{l+m+mi}{60}\PYG{p}{,}\PYG{l+m+mi}{70}\PYG{p}{]}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{n}{pasta} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}output/\PYGZdq{}}
+\PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{):}
+	\PYG{n}{os}\PYG{o}{.}\PYG{n}{makedirs}\PYG{p}{(}\PYG{n}{pasta}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}main loop through data dictionary defined above}
+\PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{data}\PYG{p}{:}
+	\PYG{n}{G} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{read\PYGZus{}weighted\PYGZus{}edgelist}\PYG{p}{(}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}file\PYGZsq{}}\PYG{p}{],}\PYG{n}{nodetype}\PYG{o}{=}\PYG{n+nb}{int}\PYG{p}{)}
+
+	\PYG{c+c1}{\PYGZsh{}start node}
+	\PYG{n}{start\PYGZus{}node} \PYG{o}{=} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}start\PYGZus{}node\PYGZsq{}}\PYG{p}{]}
+
+	\PYG{c+c1}{\PYGZsh{}ending nodes}
+	\PYG{n}{end\PYGZus{}node} \PYG{o}{=} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}end\PYGZus{}node\PYGZsq{}}\PYG{p}{]}
+
+	\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{start\PYGZus{}node}\PYG{p}{:}
+		\PYG{k}{for} \PYG{n}{e} \PYG{o+ow}{in} \PYG{n}{end\PYGZus{}node}\PYG{p}{:}
+			\PYG{n}{f} \PYG{o}{=} \PYG{n+nb}{file}\PYG{p}{(} \PYG{n}{pasta} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}algorithm\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZdq{}} \PYG{o}{+} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZdq{}} \PYG{o}{+} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{s}\PYG{p}{)} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZdq{}} \PYG{o}{+} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{e}\PYG{p}{)} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}.txt\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}w\PYGZsq{}} \PYG{p}{)}
+			\PYG{n}{sys}\PYG{o}{.}\PYG{n}{stdout} \PYG{o}{=} \PYG{n}{f}
+
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Dijkstra\PYGZsq{}s Algorithm\PYGZdq{}}
+
+			\PYG{c+c1}{\PYGZsh{}global variables}
+			\PYG{n}{qty\PYGZus{}of\PYGZus{}relaxations} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+			\PYG{n}{prev} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+			\PYG{n}{dist} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+			\PYG{n}{visited\PYGZus{}nodes} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+			\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n}{G}\PYG{o}{.}\PYG{n}{nodes}\PYG{p}{():}
+				\PYG{c+c1}{\PYGZsh{}stores the last node between s and v}
+				\PYG{n}{prev}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n+nb+bp}{None}
+				\PYG{c+c1}{\PYGZsh{}stores the minimun path length between s and v.}
+				\PYG{n}{dist}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{n+nb}{float}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}inf\PYGZsq{}}\PYG{p}{)}
+				\PYG{c+c1}{\PYGZsh{}visited nodes : 1 is visited and 0 is unvisited}
+				\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+			\PYG{c+c1}{\PYGZsh{} initial node distance is zero}
+			\PYG{n}{dist}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]} \PYG{o}{=} \PYG{l+m+mi}{0}
+
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}************************************\PYGZdq{}}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Graph Name: \PYGZdq{}}\PYG{p}{,}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}graph\PYGZus{}name\PYGZsq{}}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Start Node: \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}End Node: \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+			\PYG{c+c1}{\PYGZsh{}run the algorithm}
+			\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+			\PYG{n}{dijkstra}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{dist}\PYG{p}{,}\PYG{n}{visited\PYGZus{}nodes}\PYG{p}{,}\PYG{n}{s}\PYG{p}{,}\PYG{n}{e}\PYG{p}{)}
+			\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}
+
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Original Algorithm|\PYGZdq{}}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Shortest Path from \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} to \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{get\PYGZus{}minimum\PYGZus{}path}\PYG{p}{(}\PYG{n}{prev}\PYG{p}{,}\PYG{n}{e}\PYG{p}{)}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Previous Node before \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is : \PYGZdq{}}\PYG{p}{,}\PYG{n}{prev}\PYG{p}{[}\PYG{n}{e}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Shortest Path Length from \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} to \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is: \PYGZdq{}}\PYG{p}{,}\PYG{n}{dist}\PYG{p}{[}\PYG{n}{e}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Number of Iterations: \PYGZdq{}}\PYG{p}{,}\PYG{n}{qty\PYGZus{}of\PYGZus{}iterations}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Number of Relaxations: \PYGZdq{}}\PYG{p}{,}\PYG{n}{qty\PYGZus{}of\PYGZus{}relaxations}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+			\PYG{c+c1}{\PYGZsh{}run networkx algorithm}
+			\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{l+m+mi}{0}
+			\PYG{n}{start\PYGZus{}time} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()}
+			\PYG{n}{distance}\PYG{p}{,}\PYG{n}{path} \PYG{o}{=} \PYG{n}{nx}\PYG{o}{.}\PYG{n}{single\PYGZus{}source\PYGZus{}dijkstra}\PYG{p}{(}\PYG{n}{G}\PYG{p}{,} \PYG{n}{s}\PYG{p}{)}
+			\PYG{n}{time\PYGZus{}consumed} \PYG{o}{=} \PYG{n}{timeit}\PYG{o}{.}\PYG{n}{default\PYGZus{}timer}\PYG{p}{()} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}time}
+
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}|Networkx Algorithm|\PYGZdq{}}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Shortest Path from \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} to \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is : \PYGZdq{}}\PYG{p}{,}\PYG{n}{path}\PYG{p}{[}\PYG{n}{e}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Previous Node before \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is : \PYGZdq{}}\PYG{p}{,}\PYG{n}{path}\PYG{p}{[}\PYG{n}{e}\PYG{p}{][}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{path}\PYG{p}{[}\PYG{n}{e}\PYG{p}{])} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Shortest Path Length from \PYGZdq{}}\PYG{p}{,}\PYG{n}{s}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} to \PYGZdq{}}\PYG{p}{,}\PYG{n}{e}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{} is : \PYGZdq{}}\PYG{p}{,}\PYG{n}{distance}\PYG{p}{[}\PYG{n}{e}\PYG{p}{]}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}Time Elapsed (in seconds): \PYGZdq{}}\PYG{p}{,} \PYG{n}{time\PYGZus{}consumed}
+			\PYG{k}{print} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+			\PYG{n}{f}\PYG{o}{.}\PYG{n}{close}\PYG{p}{()}
+\end{Verbatim}

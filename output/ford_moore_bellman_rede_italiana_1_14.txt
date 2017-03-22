@@ -1,0 +1,21 @@
+************************************
+Ford-Moore-Bellman's Algorithm
+************************************
+Graph Name:  rede_italiana
+Start Node:  1
+End Node:  14
+
+|Original Algorithm|
+Shortest Path from  1  to  14  is:  [1, 3, 8, 11, 14]
+Previous Node before  14  is :  11
+Shortest Path Length from  1  to  14  is:   535.0
+Time Elapsed (in seconds):  7.48219997868e-05
+Number of Iterations:  40
+Number of Relaxations:  40
+
+|Networkx Algorithm|
+Shortest Path from  1  to  14  is :  [1, 3, 8, 11, 14]
+Previous Node before  14  is :  11
+Shortest Path Length from  1  to  14  is :  535.0
+Time Elapsed (in seconds):  0.000114550495249
+
