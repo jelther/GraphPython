@@ -1,2 +1,2 @@
-# PrimPython
-Prim's algorithm developed in Python.
+# GraphPython 
+Graph algorithms developed in Python
